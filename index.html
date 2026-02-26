@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Señora Taco - Punto de Venta</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap');
+        body { font-family: 'Outfit', sans-serif; background-color: #FFFDF5; overflow-x: hidden; }
+        
+        @media print {
+            body * { visibility: hidden; }
+            #ticket-impresion, #ticket-impresion * { visibility: visible; }
+            #ticket-impresion { position: absolute; left: 0; top: 0; width: 80mm; border: none; padding: 5mm; }
+            @page { size: 80mm auto; margin: 0; }
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .btn-active:active { transform: scale(0.96); transition: transform 0.1s; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- DATOS DEL NEGOCIO ---
+        const DIRECCION = "Paseo de la luz 4403, Col. Villa las Fuentes, Monterrey, N.L.";
+        const URL_LOGO = "logo.png"; // Asegúrate de subir tu imagen con este nombre
+        
+        const GUISOS = ["Barbacoa", "Chicharrón en S. Verde", "Deshebrada con Papa", "Machacado", "Rajas con Queso", "Papita en S. Roja", "Queso en S. Roja", "Picadillo", "Huevito en S. Verde", "Papa con Chorizo", "Frijolitos", "Nopales", "Quesadilla", "Chile Relleno de Queso", "Chile Relleno de Picadillo"];
+        const PRECIOS = { "Barbacoa": 30, "Machacado": 25, "Frijolitos": 20, "Nopales": 20, "Quesadilla": 20, "Chile Relleno de Queso": 30, "Chile Relleno de Picadillo": 30, "default": 25 };
+        
+        const BEBIDAS = [
+            { id: 's1', nombre: "Sprite", precio: 25 },
+            { id: 's2', nombre: "Ponche", precio: 25 },
+            { id: 's3', nombre: "Coca Cola Zero 250ml", precio: 15 },
+            { id: 's4', nombre: "Coca Cola 250ml", precio: 15 },
+            { id: 's5', nombre: "Joya Manzana", precio: 25 },
+            { id: 's6', nombre: "Coca Cola Zero", precio: 25 },
+            { id: 's7', nombre: "Coca Cola Regular", precio: 25 },
+            { id: 's8', nombre: "Agua", precio: 15 },
+            { id: 's9', nombre: "Café", precio: 35 }
+        ];
+
+        const COMBOS_MENU = [
+            { id: 'c1', nombre: 'Individual', precio: 135, ords: 1, tacos: 5, beb: 1 },
+            { id: 'c2', nombre: 'Pareja', precio: 275, ords: 2, tacos: 5, beb: 2 },
+            { id: 'c3', nombre: 'Familiar', precio: 465, ords: 4, tacos: 4, beb: 4 },
+        ];
+
+        // --- FIREBASE ---
+        const config = JSON.parse(window.__firebase_config || '{}');
+        if (config.apiKey) firebase.initializeApp(config);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const appId = window.__app_id || 'sra-taco-pos-oficial';
+
+        function App() {
+            const [user, setUser] = useState(null);
+            const [view, setView] = useState('pos');
+            const [sesion, setSesion] = useState(null);
+            const [carrito, setCarrito] = useState([]);
+            const [tickets, setTickets] = useState([]);
+            
+            // Modales
+            const [wizardCombo, setWizardCombo] = useState(null);
+            const [modalLibre, setModalLibre] = useState(null);
+            const [modalCarrito, setModalCarrito] = useState(false);
+            const [modalSurtir, setModalSurtir] = useState(false);
+            const [modalPagoCash, setModalPagoCash] = useState(null);
+            const [exitoPantalla, setExitoPantalla] = useState(false);
+            const [ticketImprimir, setTicketImprimir] = useState(null);
+
+            const [usarDesc, setUsarDesc] = useState(false);
+            const [pctDesc, setPctDesc] = useState(0);
+            const [notas, setNotas] = useState("");
+            const [isLoading, setIsLoading] = useState(false);
+            const [apertura, setApertura] = useState({ cash: {}, stock: {} });
+
+            useEffect(() => {
+                auth.signInAnonymously();
+                auth.onAuthStateChanged(u => {
+                    setUser(u);
+                    if (u) {
+                        const path = `artifacts/${appId}/users/${u.uid}`;
+                        db.collection(`${path}/sesiones`).where('estado', '==', 'Abierta').onSnapshot(s => {
+                            setSesion(s.docs.length > 0 ? { id: s.docs[0].id, ...s.docs[0].data() } : null);
+                        });
+                        db.collection(`${path}/tickets`).onSnapshot(s => {
+                            setTickets(s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => b.fecha - a.fecha));
+                        });
+                    }
+                });
+            }, []);
+
+            useEffect(() => { if(window.lucide) window.lucide.createIcons(); }, [view, sesion, wizardCombo, modalLibre, exitoPantalla]);
+
+            const subtotal = carrito.reduce((s, i) => s + (i.tipo === 'combo' ? i.combo.precio : i.precioTotal), 0);
+            const totalFinal = subtotal - (usarDesc ? (subtotal * (pctDesc / 100)) : 0);
+
+            const iniciarTurno = async () => {
+                let totalI = 0;
+                Object.entries(apertura.cash).forEach(([d, q]) => totalI += (parseFloat(d) * q));
+                await db.collection(`artifacts/${appId}/users/${user.uid}/sesiones`).add({
+                    fechaApertura: Date.now(),
+                    totalInicio: totalI,
+                    inventario: apertura.stock,
+                    estado: 'Abierta'
+                });
+            };
+
+            const procesarCobro = async (metodo, recibido = 0) => {
+                setIsLoading(true);
+                const tkt = {
+                    fecha: Date.now(),
+                    sesionId: sesion.id,
+                    items: carrito,
+                    subtotal,
+                    total: totalFinal,
+                    metodo,
+                    pagadoCon: metodo === 'Efectivo' ? recibido : totalFinal,
+                    cambio: metodo === 'Efectivo' ? (recibido - totalFinal) : 0,
+                    notas,
+                    propina: 0
+                };
+                const docRef = await db.collection(`artifacts/${appId}/users/${user.uid}/tickets`).add(tkt);
+                
+                const nInv = { ...sesion.inventario };
+                carrito.forEach(i => {
+                    if (i.tipo === 'combo') i.beverages.forEach(b => nInv[b] = Math.max(0, (nInv[b] || 0) - 1));
+                    else i.bebidasExtras?.forEach(b => nInv[b.id] = Math.max(0, (nInv[b.id] || 0) - 1));
+                });
+                await db.collection(`artifacts/${appId}/users/${user.uid}/sesiones`).doc(sesion.id).update({ inventario: nInv });
+
+                setTicketImprimir({ ...tkt, id: docRef.id });
+                setExitoPantalla(true);
+                setCarrito([]);
+                setModalCarrito(false);
+                setModalPagoCash(null);
+                setIsLoading(false);
+            };
+
+            if (user && !sesion) return (
+                <div className="min-h-screen p-4 flex items-center justify-center bg-[#5C3A21]">
+                    <div className="bg-white rounded-[3rem] w-full max-w-4xl flex flex-col md:flex-row shadow-2xl overflow-hidden">
+                        <div className="bg-[#E6A122] p-10 text-white md:w-2/5 flex flex-col justify-center text-center">
+                            <h2 className="text-4xl font-black uppercase mb-10 tracking-tighter">Apertura</h2>
+                            <p className="text-[10px] font-black opacity-50 uppercase mb-2">Saldo en Caja</p>
+                            <div className="text-6xl font-black">$
+                                {Object.entries(apertura.cash).reduce((acc, [d, q]) => acc + (parseFloat(d) * q), 0)}
+                            </div>
+                        </div>
+                        <div className="p-8 md:p-12 flex-1 max-h-[85vh] overflow-y-auto no-scrollbar space-y-12">
+                            <div className="grid grid-cols-2 gap-4">
+                                {[1000, 500, 200, 100, 50, 20, 10, 5, 2, 1, 0.5].map(d => (
+                                    <div key={d} className="bg-stone-50 p-2 rounded-2xl flex items-center justify-between px-5 border border-stone-100">
+                                        <span className="font-black text-stone-300 text-xs">${d}</span>
+                                        <input type="number" placeholder="0" className="w-16 bg-transparent text-center font-black outline-none" onChange={e => setApertura({...apertura, cash: {...apertura.cash, [d]: parseInt(e.target.value) || 0}})} />
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="border-t pt-8">
+                                <h3 className="text-[10px] font-black text-pink-400 uppercase tracking-widest mb-6">Stock Bebidas</h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    {BEBIDAS.map(r => (
+                                        <div key={r.id} className="bg-pink-50 p-2 rounded-2xl flex items-center justify-between px-4">
+                                            <span className="text-[9px] font-black uppercase truncate opacity-60 pr-2">{r.nombre}</span>
+                                            <input type="number" placeholder="0" className="w-10 bg-white rounded-lg text-center font-black text-pink-600 outline-none" onChange={e => setApertura({...apertura, stock: {...apertura.stock, [r.id]: parseInt(e.target.value) || 0}})} />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <button onClick={iniciarTurno} className="w-full bg-[#5C3A21] text-white font-black py-6 rounded-[2rem] shadow-xl btn-active">INICIAR CAJA</button>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="min-h-screen flex flex-col">
+                    <div id="ticket-impresion" className="hidden print:block font-mono text-[10px] leading-tight">
+                        {ticketImprimir && (
+                            <div className="text-center">
+                                <h2 className="text-xl font-black mb-1 uppercase">Señora Taco</h2>
+                                <p className="text-[8px] opacity-70 mb-4">{DIRECCION}</p>
+                                <div className="border-b border-dashed my-4 opacity-40"></div>
+                                {ticketImprimir.items.map((i, idx) => (
+                                    <div key={idx} className="mb-2 text-left">
+                                        <div className="flex justify-between font-black uppercase text-[11px]">
+                                            <span>{i.tipo==='combo'?`Combo ${i.combo.nombre}`:i.nombrePersona}</span>
+                                            <span>${i.tipo==='combo'?i.combo.precio:i.precioTotal}</span>
+                                        </div>
+                                        {i.tipo==='combo' && i.ords.map((o, k) => (
+                                            <p key={k} className="text-[8px] ml-2 opacity-60">• Plato {k+1}: {o.nombre || '...'}</p>
+                                        ))}
+                                    </div>
+                                ))}
+                                <div className="border-t border-dashed my-4"></div>
+                                <div className="flex justify-between font-black text-[14px]"><span>TOTAL</span><span>${ticketImprimir.total}.00</span></div>
+                                <p className="mt-8 uppercase font-black opacity-30 text-[8px]">¡Gracias por su compra!</p>
+                            </div>
+                        )}
+                    </div>
+
+                    <nav className="bg-[#E6A122] p-5 text-white flex justify-between items-center sticky top-0 z-50 shadow-xl no-print">
+                        <div className="flex items-center gap-5">
+                            <div className="bg-white p-1 rounded-full w-14 h-14 overflow-hidden border-2 border-white"><img src={URL_LOGO} className="w-full h-full object-cover" /></div>
+                            <h1 className="font-black uppercase tracking-tighter hidden sm:block text-2xl">Sra. Taco</h1>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <button onClick={()=>setView('pos')} className={`p-4 rounded-[1.5rem] transition-all ${view==='pos'?'bg-[#5C3A21] scale-110 shadow-2xl':''}`}><i data-lucide="layout-dashboard"></i></button>
+                            <button onClick={()=>setView('history')} className={`p-4 rounded-[1.5rem] transition-all ${view==='history'?'bg-[#5C3A21] scale-110 shadow-2xl':''}`}><i data-lucide="clock"></i></button>
+                            <button onClick={()=>setModalCarrito(true)} className="ml-4 bg-[#E84E8A] px-8 py-4 rounded-full font-black shadow-lg btn-active flex items-center gap-3 relative">
+                                <i data-lucide="shopping-bag" className="w-6 h-6"></i>
+                                {carrito.length>0 && <span className="absolute -top-1 -right-1 bg-white text-[#E84E8A] w-6 h-6 flex items-center justify-center rounded-full text-[10px] animate-bounce font-black">{carrito.length}</span>}
+                            </button>
+                        </div>
+                    </nav>
+
+                    <main className="p-6 sm:p-12 max-w-7xl mx-auto flex-1 no-print">
+                        {view === 'pos' ? (
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                                {COMBOS_MENU.map(c => (
+                                    <div key={c.id} className="bg-white rounded-[4rem] p-12 border border-stone-100 shadow-sm text-center flex flex-col group hover:shadow-2xl transition-all hover:-translate-y-2">
+                                        <h3 className="text-3xl font-black uppercase text-stone-700">{c.nombre}</h3>
+                                        <div className="my-10 text-7xl font-black text-[#E84E8A] tracking-tighter">${c.precio}</div>
+                                        <button onClick={() => {
+                                            const ords = Array.from({length: c.ords}, () => ({nombre: "", tacos: Array.from({length: c.tacos}, () => ({guiso: "Deshebrada con Papa", tortilla: "Maíz", frij: true}))}));
+                                            setWizardCombo({ combo: c, paso: 0, ords, beverages: Array.from({length: c.beb}, () => BEBIDAS[0].id) });
+                                        }} className="w-full bg-[#5C3A21] group-hover:bg-black text-white font-black py-6 rounded-[2.5rem] shadow-xl btn-active uppercase text-[12px] tracking-widest transition-all">Tomar Orden</button>
+                                    </div>
+                                ))}
+                                <div className="md:col-span-3">
+                                    <button onClick={() => setModalLibre({nombrePersona: "", tacos: [{guiso: "Barbacoa", tortilla: "Maíz", frij: true, id: Date.now()}], bebidasExtras: []})} className="w-full border-4 border-dashed border-stone-200 rounded-[4rem] p-20 text-stone-300 font-black uppercase text-2xl hover:bg-white hover:text-pink-500 hover:border-pink-500 transition-all btn-active">
+                                        <i data-lucide="plus" className="inline w-12 h-12 mr-4 -mt-2"></i> Orden Individual
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="space-y-12">
+                                <div className="bg-white rounded-[3rem] p-10 shadow-2xl flex flex-col lg:flex-row justify-between items-center gap-10 border border-stone-50">
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 flex-1 w-full text-center">
+                                        <div className="bg-stone-50 p-6 rounded-[2.5rem]"><p className="text-[10px] font-black opacity-30 uppercase tracking-widest">Inicio</p><p className="text-3xl font-black text-stone-700">${sesion?.totalInicio}</p></div>
+                                        <div className="bg-green-50 p-6 rounded-[2.5rem]"><p className="text-[10px] font-black text-green-300 uppercase tracking-widest">Efectivo</p><p className="text-3xl font-black text-green-700">${tickets.filter(t=>t.metodo==='Efectivo').reduce((s,t)=>s+t.total,0)}</p></div>
+                                        <div className="bg-blue-50 p-6 rounded-[2.5rem]"><p className="text-[10px] font-black text-blue-300 uppercase tracking-widest">Otros</p><p className="text-3xl font-black text-blue-700">${tickets.filter(t=>t.metodo!=='Efectivo').reduce((s,t)=>s+t.total,0)}</p></div>
+                                        <div className="bg-amber-50 p-6 rounded-[2.5rem]"><p className="text-[10px] font-black text-amber-400 uppercase tracking-widest">Propinas</p><p className="text-3xl font-black text-amber-700">${tickets.reduce((s,t)=>s+(t.propina||0),0)}</p></div>
+                                    </div>
+                                    <button onClick={()=>setModalSurtir(true)} className="bg-stone-800 hover:bg-black text-white px-10 py-6 rounded-[2.5rem] font-black uppercase text-[11px] tracking-widest active:scale-95 shadow-xl transition-all">📦 SURTIR</button>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                                    {tickets.map(t => (
+                                        <div key={t.id} className="bg-white rounded-[3rem] p-8 border border-stone-100 shadow-sm flex flex-col justify-between hover:shadow-2xl transition-all">
+                                            <div>
+                                                <div className="flex justify-between items-center mb-6">
+                                                    <span className="text-[10px] font-black opacity-20 uppercase">{new Date(t.fecha).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
+                                                    <span className={`text-[8px] font-black px-3 py-1 rounded-full uppercase ${t.metodo === 'Tarjeta' ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'}`}>{t.metodo}</span>
+                                                </div>
+                                                <p className="text-4xl font-black text-[#5C3A21] tracking-tighter">${t.total}.00</p>
+                                            </div>
+                                            <div className="mt-8 space-y-5">
+                                                <div className="bg-amber-50/50 p-4 rounded-3xl flex items-center border border-amber-100/50">
+                                                    <input type="number" pla
