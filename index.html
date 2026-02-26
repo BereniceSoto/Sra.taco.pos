@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Señora Taco - POS Local</title>
+    <title>Señora Taco - POS Profesional</title>
+    <!-- Librerías Externas -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -19,8 +21,8 @@
         
         @media print {
             body * { visibility: hidden; }
-            #ticket-final, #ticket-final * { visibility: visible; }
-            #ticket-final { position: absolute; left: 0; top: 0; width: 80mm; border: none; padding: 5mm; }
+            #ticket-real, #ticket-real * { visibility: visible; }
+            #ticket-real { position: absolute; left: 0; top: 0; width: 80mm; border: none; padding: 5mm; }
             @page { size: 80mm auto; margin: 0; }
         }
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -65,31 +67,31 @@
         const auth = firebase.auth();
         const appId = window.__app_id || 'sra-taco-pos-final';
 
-        // Componente TacoConfigRow definido fuera para mejor organización
+        // Componente TacoConfigRow
         function TacoConfigRow({ taco, onChange, index }) {
             const reglaQueso = taco.guiso === "Frijolitos" || taco.guiso === "Nopales";
             return (
-                <div className="bg-white p-8 rounded-[3rem] border border-stone-100 shadow-md mb-6 animate-in slide-in-from-right duration-500">
-                    <div className="flex justify-between items-center mb-6 px-4">
-                        <span className="bg-amber-100 text-amber-800 text-[11px] font-black px-4 py-1 rounded-full uppercase tracking-widest">Taco {index + 1}</span>
-                        <span className="text-[13px] font-black text-pink-500 leading-none">${PRECIOS[taco.guiso] || 25}</span>
+                <div className="bg-white p-6 rounded-[2.5rem] border border-stone-100 shadow-md mb-4 animate-in slide-in-from-right duration-500">
+                    <div className="flex justify-between items-center mb-4 px-2">
+                        <span className="bg-amber-100 text-amber-800 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">Taco {index + 1}</span>
+                        <span className="text-[11px] font-black text-pink-500 leading-none">${PRECIOS[taco.guiso] || 25}</span>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
-                        <div className="space-y-2">
-                             <label className="text-[9px] font-black uppercase text-stone-300 ml-2">Guiso</label>
-                             <select className="w-full bg-stone-50 border-none rounded-[2rem] p-6 text-xl font-black outline-none ring-2 ring-stone-100 focus:ring-4 focus:ring-amber-400 appearance-none shadow-inner" value={taco.guiso} onChange={(e) => onChange('guiso', e.target.value)}>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                        <div className="space-y-1">
+                             <label className="text-[9px] font-black uppercase text-stone-300 ml-2 font-black">Guiso</label>
+                             <select className="w-full bg-stone-50 border-none rounded-2xl p-4 text-sm font-black outline-none ring-2 ring-stone-100 focus:ring-4 focus:ring-amber-400 appearance-none shadow-inner" value={taco.guiso} onChange={(e) => onChange('guiso', e.target.value)}>
                                 {GUISOS.map(g => <option key={g} value={g}>{g}</option>)}
                              </select>
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-[9px] font-black uppercase text-stone-300 ml-2">Tortilla</label>
-                            <div className="flex bg-stone-100 p-1.5 rounded-[2rem] shadow-inner">
-                                <button onClick={() => onChange('tortilla', 'Harina')} className={`flex-1 py-5 text-[11px] font-black rounded-3xl transition ${taco.tortilla === 'Harina' ? 'bg-white shadow-xl text-[#5C3A21]' : 'text-stone-400'}`}>HARINA</button>
-                                <button onClick={() => onChange('tortilla', 'Maíz')} className={`flex-1 py-5 text-[11px] font-black rounded-3xl transition ${taco.tortilla === 'Maíz' ? 'bg-white shadow-xl text-[#5C3A21]' : 'text-stone-400'}`}>MAÍZ</button>
+                        <div className="space-y-1">
+                            <label className="text-[9px] font-black uppercase text-stone-300 ml-2 font-black">Tortilla</label>
+                            <div className="flex bg-stone-100 p-1.5 rounded-[1.5rem] shadow-inner font-black">
+                                <button onClick={() => onChange('tortilla', 'Harina')} className={`flex-1 py-3 text-[10px] font-black rounded-xl transition ${taco.tortilla === 'Harina' ? 'bg-white shadow-xl text-[#5C3A21]' : 'text-stone-400'}`}>HARINA</button>
+                                <button onClick={() => onChange('tortilla', 'Maíz')} className={`flex-1 py-3 text-[10px] font-black rounded-xl transition ${taco.tortilla === 'Maíz' ? 'bg-white shadow-xl text-[#5C3A21]' : 'text-stone-400'}`}>MAÍZ</button>
                             </div>
                         </div>
                     </div>
-                    <label className="mt-8 flex items-center cursor-pointer px-6 group">
+                    <label className="mt-8 flex items-center cursor-pointer px-6 group font-black">
                         <div className="relative">
                             <input type="checkbox" className="sr-only" checked={taco.frij} onChange={(e) => onChange('frij', e.target.checked)} />
                             <div className={`block w-16 h-9 rounded-full transition-colors ${taco.frij ? 'bg-[#E84E8A]' : 'bg-stone-200'}`}></div>
@@ -108,7 +110,6 @@
             const [tickets, setTickets] = useState([]);
             const [carrito, setCarrito] = useState([]);
             
-            // Modales
             const [wizardCombo, setWizardCombo] = useState(null);
             const [modalLibre, setModalLibre] = useState(null);
             const [modalCarrito, setModalCarrito] = useState(false);
@@ -117,13 +118,10 @@
             const [modalExito, setModalExito] = useState(false);
             const [printData, setPrintData] = useState(null);
 
-            // Pago
             const [descActivo, setDescActivo] = useState(false);
             const [pctDesc, setPctDesc] = useState(0);
             const [notasVenta, setNotasVenta] = useState("");
             const [isLoading, setIsLoading] = useState(false);
-
-            // Apertura
             const [apertura, setApertura] = useState({ cash: {}, stock: {} });
 
             useEffect(() => {
@@ -142,14 +140,11 @@
                 });
             }, []);
 
-            // Actualizar iconos de Lucide cada vez que cambian estados visuales críticos
-            useEffect(() => { 
-                if(window.lucide) window.lucide.createIcons(); 
-            }, [view, sesion, wizardCombo, modalLibre, modalExito, modalCarrito, modalSurtir, modalCambio]);
+            useEffect(() => { if(window.lucide) window.lucide.createIcons(); }, [view, sesion, wizardCombo, modalLibre, modalExito, modalCarrito, modalSurtir, modalCambio]);
 
             const subtotal = carrito.reduce((s, i) => s + (i.tipo === 'combo' ? i.combo.precio : i.precioTotal), 0);
-            const descuento = descActivo ? (subtotal * (pctDesc / 100)) : 0;
-            const total = subtotal - descuento;
+            const descuentoMonto = descActivo ? (subtotal * (pctDesc / 100)) : 0;
+            const totalFinal = subtotal - descuentoMonto;
 
             const handleApertura = async () => {
                 setIsLoading(true);
@@ -166,20 +161,14 @@
                 finally { setIsLoading(false); }
             };
 
-            const procesarVenta = async (metodo, recibido = 0) => {
+            const registrarCobro = async (metodo, recibido = 0) => {
                 setIsLoading(true);
                 const tkt = {
-                    fecha: Date.now(),
-                    sesionId: sesion.id,
-                    items: carrito,
-                    subtotal,
-                    descuento,
-                    total,
-                    metodo,
-                    pagadoCon: metodo === 'Efectivo' ? recibido : total,
-                    cambio: metodo === 'Efectivo' ? (recibido - total) : 0,
-                    notas: notasVenta,
-                    propina: 0
+                    fecha: Date.now(), sesionId: sesion.id, items: carrito,
+                    subtotal, descuento: descuentoMonto, total: totalFinal,
+                    metodo, pagadoCon: metodo === 'Efectivo' ? recibido : totalFinal,
+                    cambio: metodo === 'Efectivo' ? (recibido - totalFinal) : 0,
+                    notas: notasVenta, propina: 0
                 };
                 try {
                     const docRef = await db.collection(`artifacts/${appId}/users/${user.uid}/tickets`).add(tkt);
@@ -189,7 +178,6 @@
                         else i.bebidasExtras?.forEach(b => nInv[b.id] = Math.max(0, (nInv[b.id] || 0) - 1));
                     });
                     await db.collection(`artifacts/${appId}/users/${user.uid}/sesiones`).doc(sesion.id).update({ inventario: nInv });
-
                     setPrintData({ ...tkt, id: docRef.id });
                     setModalExito(true);
                     setCarrito([]);
@@ -199,44 +187,38 @@
                 finally { setIsLoading(false); }
             };
 
-            const surtirItem = async (id, n) => {
-                const nInv = { ...sesion.inventario };
-                nInv[id] = (nInv[id] || 0) + parseInt(n);
-                await db.collection(`artifacts/${appId}/users/${user.uid}/sesiones`).doc(sesion.id).update({ inventario: nInv });
-            };
-
             if (user && !sesion) return (
                 <div className="min-h-screen p-4 flex items-center justify-center bg-[#5C3A21]">
-                    <div className="bg-white rounded-[3rem] w-full max-w-4xl flex flex-col md:flex-row shadow-2xl overflow-hidden border border-white/20">
-                        <div className="bg-[#E6A122] p-10 text-white md:w-2/5 flex flex-col justify-center text-center">
+                    <div className="bg-white rounded-[3rem] w-full max-w-4xl flex flex-col md:flex-row shadow-2xl overflow-hidden">
+                        <div className="bg-[#E6A122] p-10 text-white md:w-2/5 flex flex-col justify-center text-center font-black">
                             <i data-lucide="calculator" className="w-16 h-16 mx-auto mb-6 text-[#5C3A21]"></i>
-                            <h2 className="text-4xl font-black uppercase mb-10 tracking-tighter leading-none">Abrir<br/>Caja</h2>
-                            <p className="text-[10px] font-black opacity-50 uppercase tracking-widest mb-2">Total Efectivo</p>
+                            <h2 className="text-4xl font-black uppercase mb-10 tracking-tighter leading-none font-black uppercase">Abrir<br/>Caja</h2>
+                            <p className="text-[10px] font-black opacity-50 uppercase tracking-widest mb-2 font-black font-black font-black">Total en Efectivo</p>
                             <div className="text-6xl font-black">$
                                 {Object.entries(apertura.cash).reduce((acc, [d, q]) => acc + (parseFloat(d) * q), 0)}
                             </div>
                         </div>
-                        <div className="p-8 md:p-12 flex-1 max-h-[85vh] overflow-y-auto no-scrollbar space-y-12">
-                            <div className="grid grid-cols-2 gap-4">
+                        <div className="p-8 md:p-12 flex-1 max-h-[85vh] overflow-y-auto no-scrollbar space-y-12 font-black font-black font-black">
+                            <div className="grid grid-cols-2 gap-4 font-black">
                                 {[1000, 500, 200, 100, 50, 20, 10, 5, 2, 1, 0.5].map(d => (
-                                    <div key={d} className="bg-stone-50 p-2 rounded-2xl flex items-center justify-between px-5 border border-stone-100 shadow-inner">
-                                        <span className="font-black text-stone-300 text-xs">${d}</span>
-                                        <input type="number" placeholder="0" className="w-16 bg-transparent text-center font-black text-xl text-[#5C3A21] outline-none" onChange={e => setApertura({...apertura, cash: {...apertura.cash, [d]: parseInt(e.target.value) || 0}})} />
+                                    <div key={d} className="bg-stone-50 p-2 rounded-2xl flex items-center justify-between px-5 border border-stone-100 font-black">
+                                        <span className="font-black text-stone-300 text-xs font-black font-black font-black">${d}</span>
+                                        <input type="number" placeholder="0" className="w-16 bg-transparent text-center font-black text-xl text-[#5C3A21] outline-none font-black" onChange={e => setApertura({...apertura, cash: {...apertura.cash, [d]: parseInt(e.target.value) || 0}})} />
                                     </div>
                                 ))}
                             </div>
-                            <div className="border-t pt-8">
-                                <h3 className="text-[10px] font-black text-pink-400 uppercase tracking-widest mb-6">Stock Inicial Bebidas</h3>
-                                <div className="grid grid-cols-2 gap-4">
+                            <div className="border-t pt-8 font-black font-black">
+                                <h3 className="text-[10px] font-black text-pink-400 uppercase tracking-widest mb-6 font-black font-black font-black">Stock Bebidas</h3>
+                                <div className="grid grid-cols-2 gap-4 font-black font-black">
                                     {BEBIDAS_CAT.map(r => (
-                                        <div key={r.id} className="bg-pink-50 p-3 rounded-2xl flex items-center justify-between px-5">
-                                            <span className="text-[9px] font-black uppercase truncate pr-2 opacity-60">{r.nombre}</span>
-                                            <input type="number" placeholder="0" className="w-10 bg-white rounded-lg text-center font-black text-pink-600 outline-none p-1 shadow-sm" onChange={e => setApertura({...apertura, stock: {...apertura.stock, [r.id]: parseInt(e.target.value) || 0}})} />
+                                        <div key={r.id} className="bg-pink-50 p-3 rounded-2xl flex items-center justify-between px-5 font-black font-black">
+                                            <span className="text-[9px] font-black uppercase truncate opacity-60 pr-2 font-black font-black">{r.nombre}</span>
+                                            <input type="number" placeholder="0" className="w-10 bg-white rounded-lg text-center font-black text-pink-600 outline-none p-1 font-black font-black" onChange={e => setApertura({...apertura, stock: {...apertura.stock, [r.id]: parseInt(e.target.value) || 0}})} />
                                         </div>
                                     ))}
                                 </div>
                             </div>
-                            <button onClick={handleApertura} disabled={isLoading} className="w-full bg-[#5C3A21] text-white font-black py-6 rounded-[2rem] shadow-xl btn-active uppercase text-sm tracking-widest">Confirmar Apertura</button>
+                            <button onClick={handleApertura} disabled={isLoading} className="w-full bg-[#5C3A21] text-white font-black py-6 rounded-[2rem] shadow-xl btn-active uppercase text-sm tracking-widest font-black font-black font-black">CONFIRMAR</button>
                         </div>
                     </div>
                 </div>
@@ -244,112 +226,96 @@
 
             return (
                 <div className="min-h-screen flex flex-col">
-                    {/* TICKET IMPRIMIBLE */}
-                    <div id="ticket-final" className="hidden print:block font-mono text-[10px] leading-tight border">
+                    <div id="ticket-real" className="hidden print:block font-mono text-[10px] leading-tight border p-4">
                         {printData && (
-                            <div className="text-center">
-                                <h2 className="text-xl font-black mb-1 uppercase text-[#5C3A21]">Señora Taco</h2>
-                                <p className="text-[8px] opacity-70 mb-4">{DIRECCION}</p>
-                                <div className="border-b border-dashed my-4 opacity-40"></div>
+                            <div className="text-center font-black">
+                                <h2 className="text-xl font-black mb-1 uppercase text-[#5C3A21] font-black font-black font-black font-black">Señora Taco</h2>
+                                <p className="text-[8px] opacity-70 mb-4 font-black">{DIRECCION}</p>
+                                <div className="border-b border-dashed my-4 opacity-40 font-black"></div>
                                 {printData.items.map((i, idx) => (
-                                    <div key={idx} className="mb-2 text-left">
-                                        <div className="flex justify-between font-black uppercase text-[11px]">
+                                    <div key={idx} className="mb-2 text-left font-black">
+                                        <div className="flex justify-between font-black uppercase text-[11px] font-black font-black">
                                             <span>{i.tipo==='combo'?`Combo ${i.combo.nombre}`:i.nombrePersona}</span>
                                             <span>${i.tipo==='combo'?i.combo.precio:i.precioTotal}</span>
                                         </div>
                                         {i.tipo==='combo' && i.ords.map((o, k) => (
-                                            <div key={k} className="ml-2 mt-1">
-                                                <p className="text-[9px] font-bold opacity-60 uppercase">Para: {o.nombre || '...'}</p>
-                                                {o.tacos.map((tk, tj) => (
-                                                    <p key={tj} className="text-[8px] ml-2 opacity-40">• {tk.guiso} ({tk.tortilla})</p>
-                                                ))}
+                                            <div key={k} className="ml-2 mt-1 font-black font-black">
+                                                <p className="text-[9px] font-bold opacity-60 uppercase font-black">Plato {k+1}: {o.nombre || '...'}</p>
                                             </div>
                                         ))}
                                     </div>
                                 ))}
-                                <div className="border-t border-dashed my-4"></div>
-                                <div className="flex justify-between font-black text-sm"><span>TOTAL</span><span>${printData.total}.00</span></div>
-                                <p className="mt-8 uppercase font-black opacity-30 text-[8px] text-center italic">El sabor de hogar</p>
+                                <div className="border-t border-dashed my-4 font-black"></div>
+                                <div className="flex justify-between font-black text-[14px] font-black font-black"><span>TOTAL</span><span>${printData.total}.00</span></div>
+                                <p className="mt-8 uppercase font-black opacity-30 text-[8px] text-center italic font-black font-black">¡Gracias por su compra!</p>
                             </div>
                         )}
                     </div>
 
-                    <nav className="bg-[#E6A122] p-5 text-white flex justify-between items-center sticky top-0 z-50 shadow-xl no-print">
-                        <div className="flex items-center gap-5">
-                            <div className="bg-white p-1 rounded-full w-14 h-14 overflow-hidden border-2 border-white shrink-0 active-bounce">
-                                <img src={URL_LOGO} className="w-full h-full object-cover" />
+                    <nav className="bg-[#E6A122] p-5 text-white flex justify-between items-center sticky top-0 z-50 shadow-xl no-print font-black">
+                        <div className="flex items-center gap-5 font-black">
+                            <div className="bg-white p-1 rounded-full w-14 h-14 overflow-hidden border-2 border-white shrink-0 active-bounce shadow-lg font-black">
+                                <img src={URL_LOGO} className="w-full h-full object-cover" onError={(e)=>e.target.style.display='none'} />
                             </div>
-                            <h1 className="font-black uppercase tracking-tighter hidden sm:block text-2xl">Sra. Taco</h1>
+                            <h1 className="font-black uppercase tracking-tighter hidden sm:block text-2xl font-black font-black font-black">Sra. Taco</h1>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 font-black">
                             <button onClick={()=>setView('pos')} className={`p-4 rounded-[1.5rem] transition-all ${view==='pos'?'bg-[#5C3A21] scale-110 shadow-2xl':''}`}><i data-lucide="layout-dashboard"></i></button>
                             <button onClick={()=>setView('history')} className={`p-4 rounded-[1.5rem] transition-all ${view==='history'?'bg-[#5C3A21] scale-110 shadow-2xl':''}`}><i data-lucide="clock"></i></button>
-                            <button onClick={()=>setModalCarrito(true)} className="ml-4 bg-[#E84E8A] px-8 py-4 rounded-full font-black shadow-lg btn-active flex items-center gap-3 relative">
-                                <i data-lucide="shopping-bag" className="w-6 h-6"></i>
-                                {carrito.length>0 && <span className="absolute -top-1 -right-1 bg-white text-[#E84E8A] w-6 h-6 flex items-center justify-center rounded-full text-[10px] animate-bounce font-black shadow-sm">{carrito.length}</span>}
+                            <button onClick={()=>setModalCarrito(true)} className="ml-4 bg-[#E84E8A] px-8 py-4 rounded-full font-black shadow-lg btn-active flex items-center gap-3 relative font-black font-black font-black font-black">
+                                <i data-lucide="shopping-bag" className="w-6 h-6 font-black font-black"></i>
+                                {carrito.length>0 && <span className="absolute -top-1 -right-1 bg-white text-[#E84E8A] w-6 h-6 flex items-center justify-center rounded-full text-[10px] animate-bounce font-black shadow-sm font-black font-black">{carrito.length}</span>}
                             </button>
                         </div>
                     </nav>
 
-                    <main className="p-6 sm:p-12 max-w-7xl mx-auto flex-1 no-print">
+                    <main className="p-6 sm:p-12 max-w-7xl mx-auto flex-1 no-print font-black">
                         {view === 'pos' ? (
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 font-black font-black">
                                 {COMBOS_DATA.map(c => (
-                                    <div key={c.id} className="bg-white rounded-[4rem] p-12 border border-stone-100 shadow-sm text-center flex flex-col group hover:shadow-2xl transition-all hover:-translate-y-2">
-                                        <h3 className="text-3xl font-black uppercase text-stone-700 tracking-tighter">{c.nombre}</h3>
-                                        <p className="text-stone-300 text-[10px] font-black mt-2 uppercase tracking-widest">{c.ords} Plato • {c.beb} Bebidas</p>
-                                        <div className="my-10 text-7xl font-black text-[#E84E8A] tracking-tighter">${c.precio}</div>
+                                    <div key={c.id} className="bg-white rounded-[4rem] p-12 border border-stone-100 shadow-sm text-center flex flex-col group hover:shadow-2xl transition-all hover:-translate-y-2 font-black">
+                                        <h3 className="text-3xl font-black uppercase text-stone-700 font-black font-black font-black">{c.nombre}</h3>
+                                        <div className="my-10 text-7xl font-black text-[#E84E8A] tracking-tighter font-black font-black font-black font-black font-black">${c.precio}</div>
                                         <button onClick={() => {
                                             const ords = Array.from({length: c.ords}, () => ({nombre: "", tacos: Array.from({length: c.tacos}, () => ({guiso: "Deshebrada con Papa", tortilla: "Maíz", frij: true}))}));
                                             setWizardCombo({ combo: c, paso: 0, ords, beverages: Array.from({length: c.beb}, () => BEBIDAS_CAT[0].id) });
-                                        }} className="w-full bg-[#5C3A21] group-hover:bg-black text-white font-black py-6 rounded-[2.5rem] shadow-xl btn-active uppercase text-[11px] tracking-widest transition-all">Vender Combo</button>
+                                        }} className="w-full bg-[#5C3A21] group-hover:bg-black text-white font-black py-6 rounded-[2.5rem] shadow-xl btn-active uppercase text-[11px] tracking-widest transition-all font-black font-black font-black">TOMAR ORDEN</button>
                                     </div>
                                 ))}
-                                <div className="md:col-span-3">
-                                    <button onClick={() => setModalLibre({nombrePersona: "", tacos: [{guiso: "Barbacoa", tortilla: "Maíz", frij: true, id: Date.now()}], bebidasExtras: []})} className="w-full border-4 border-dashed border-stone-200 rounded-[4rem] p-20 text-stone-300 font-black uppercase text-2xl hover:bg-white hover:text-pink-500 hover:border-pink-500 transition-all btn-active">
-                                        <i data-lucide="plus" className="inline w-12 h-12 mr-4 -mt-2"></i> Orden Individual
+                                <div className="md:col-span-3 font-black font-black">
+                                    <button onClick={() => setModalLibre({nombrePersona: "", tacos: [{guiso: "Barbacoa", tortilla: "Maíz", frij: true, id: Date.now()}], bebidasExtras: []})} className="w-full border-4 border-dashed border-stone-200 rounded-[4rem] p-16 text-stone-300 font-black uppercase text-2xl hover:bg-white hover:text-pink-500 hover:border-pink-500 transition-all btn-active font-black font-black font-black">
+                                        <i data-lucide="plus" className="inline w-12 h-12 mr-4 -mt-2 shadow-sm font-black font-black"></i> Venta Directa
                                     </button>
                                 </div>
                             </div>
                         ) : (
-                            <div className="space-y-12">
-                                <div className="bg-white rounded-[4rem] p-10 shadow-2xl flex flex-col lg:flex-row justify-between items-center gap-10 border border-stone-50">
-                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 flex-1 w-full text-center">
-                                        <div className="bg-stone-50 p-6 rounded-[2.5rem] shadow-inner"><p className="text-[10px] font-black opacity-30 uppercase tracking-widest">Inicio</p><p className="text-3xl font-black text-stone-700">${sesion?.totalInicio}</p></div>
-                                        <div className="bg-green-50 p-6 rounded-[2.5rem] shadow-inner"><p className="text-[10px] font-black text-green-300 uppercase tracking-widest">Efectivo</p><p className="text-3xl font-black text-green-700">${tickets.filter(t=>t.metodo==='Efectivo').reduce((s,t)=>s+t.total,0)}</p></div>
-                                        <div className="bg-blue-50 p-6 rounded-[2.5rem] shadow-inner"><p className="text-[10px] font-black text-blue-300 uppercase tracking-widest">Otros</p><p className="text-3xl font-black text-blue-700">${tickets.filter(t=>t.metodo!=='Efectivo').reduce((s,t)=>s+t.total,0)}</p></div>
-                                        <div className="bg-amber-50 p-6 rounded-[2.5rem] shadow-inner"><p className="text-[10px] font-black text-amber-400 uppercase tracking-widest">Propinas</p><p className="text-3xl font-black text-amber-700">${tickets.reduce((s,t)=>s+(t.propina||0),0)}</p></div>
+                            <div className="space-y-12 animate-in slide-in-from-bottom duration-500 font-black font-black">
+                                <div className="bg-white rounded-[3rem] p-10 shadow-2xl flex flex-col lg:flex-row justify-between items-center gap-10 border border-stone-50 font-black font-black">
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 flex-1 w-full text-center font-black font-black">
+                                        <div className="bg-stone-50 p-6 rounded-[2.5rem] shadow-inner font-black font-black"><p className="text-[10px] font-black opacity-30 uppercase font-black font-black">Inicio</p><p className="text-3xl font-black text-stone-700 font-black font-black font-black font-black font-black font-black">${sesion?.totalInicio}</p></div>
+                                        <div className="bg-green-50 p-6 rounded-[2.5rem] shadow-inner font-black font-black"><p className="text-[10px] font-black text-green-300 uppercase font-black font-black">Cash</p><p className="text-3xl font-black text-green-700 font-black font-black font-black font-black font-black font-black">${tickets.filter(t=>t.metodo==='Efectivo').reduce((s,t)=>s+t.total,0)}</p></div>
+                                        <div className="bg-blue-50 p-6 rounded-[2.5rem] shadow-inner font-black font-black"><p className="text-[10px] font-black text-blue-300 uppercase font-black font-black">Otros</p><p className="text-3xl font-black text-blue-700 font-black font-black font-black font-black font-black font-black">${tickets.filter(t=>t.metodo!=='Efectivo').reduce((s,t)=>s+t.total,0)}</p></div>
+                                        <div className="bg-amber-50 p-6 rounded-[2.5rem] shadow-inner font-black font-black"><p className="text-[10px] font-black text-amber-400 uppercase font-black font-black">Propina</p><p className="text-3xl font-black text-amber-700 font-black font-black font-black font-black font-black font-black">${tickets.reduce((s,t)=>s+(t.propina||0),0)}</p></div>
                                     </div>
-                                    <div className="flex gap-4">
-                                        <button onClick={()=>setModalSurtir(true)} className="bg-stone-800 hover:bg-black text-white px-10 py-5 rounded-[2.5rem] font-black uppercase text-[11px] tracking-widest active:scale-95 shadow-xl transition-all">📦 SURTIR</button>
-                                        <button onClick={async () => {
-                                            const ts = tickets.filter(t=>t.sesionId===sesion.id);
-                                            const cash = ts.filter(t=>t.metodo==='Efectivo').reduce((s,t)=>s+t.total,0);
-                                            await db.collection(`artifacts/${appId}/users/${user.uid}/sesiones`).doc(sesion.id).update({
-                                                fechaCierre: Date.now(),
-                                                totalVentasCash: cash,
-                                                estado: 'Cerrada'
-                                            });
-                                        }} className="bg-red-500 hover:bg-red-600 text-white px-10 py-5 rounded-[2.5rem] font-black uppercase text-[11px] tracking-widest active:scale-95 shadow-xl transition-all">Cerrar Caja</button>
-                                    </div>
+                                    <button onClick={()=>setModalSurtir(true)} className="bg-stone-800 hover:bg-black text-white px-10 py-5 rounded-[2.5rem] font-black uppercase text-[11px] tracking-widest active:scale-95 shadow-xl transition-all font-black font-black font-black font-black">📦 SURTIR</button>
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 font-black">
                                     {tickets.map(t => (
-                                        <div key={t.id} className="bg-white rounded-[3rem] p-8 border border-stone-100 shadow-sm flex flex-col justify-between hover:shadow-2xl transition-all">
-                                            <div>
-                                                <div className="flex justify-between items-center mb-6">
-                                                    <span className="text-[10px] font-black opacity-20 uppercase">{new Date(t.fecha).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
-                                                    <span className={`text-[8px] font-black px-3 py-1 rounded-full uppercase bg-stone-50`}>{t.metodo}</span>
+                                        <div key={t.id} className="bg-white rounded-[3rem] p-8 border border-stone-100 shadow-sm flex flex-col justify-between hover:shadow-2xl transition-all relative group font-black">
+                                            <div className="font-black font-black">
+                                                <div className="flex justify-between items-center mb-6 font-black font-black">
+                                                    <span className="text-[10px] font-black opacity-20 uppercase font-black font-black font-black font-black font-black">{new Date(t.fecha).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
+                                                    <span className={`text-[8px] font-black px-3 py-1 rounded-full uppercase bg-stone-50 font-black font-black font-black font-black font-black`}>{t.metodo}</span>
                                                 </div>
-                                                <p className="text-4xl font-black text-[#5C3A21] tracking-tighter">${t.total}.00</p>
+                                                <p className="text-4xl font-black text-[#5C3A21] tracking-tighter font-black font-black font-black font-black font-black font-black font-black">${t.total}.00</p>
                                             </div>
-                                            <div className="mt-8 space-y-4">
-                                                <div className="bg-amber-50 p-4 rounded-3xl flex items-center border border-amber-100/50 shadow-inner">
-                                                    <input type="number" placeholder="Propina $" className="bg-transparent text-lg font-black text-amber-700 outline-none w-full placeholder:text-amber-200 text-center" defaultValue={t.propina || ""} onBlur={e => db.collection(`artifacts/${appId}/users/${user.uid}/tickets`).doc(t.id).update({propina: parseFloat(e.target.value)||0})} />
+                                            <div className="mt-8 space-y-4 font-black font-black font-black font-black font-black">
+                                                <div className="bg-amber-50/50 p-4 rounded-3xl flex items-center border border-amber-100/50 shadow-inner font-black">
+                                                    <input type="number" placeholder="Propina $" className="bg-transparent text-lg font-black text-amber-700 outline-none w-full placeholder:text-amber-200 text-center font-black font-black font-black" defaultValue={t.propina || ""} onBlur={e => db.collection(`artifacts/${appId}/users/${user.uid}/tickets`).doc(t.id).update({propina: parseFloat(e.target.value)||0})} />
                                                 </div>
-                                                <div className="flex gap-2">
-                                                    <button onClick={() => { setPrintData(t); setTimeout(()=>window.print(),300); }} className="flex-1 py-4 bg-stone-50 rounded-[1.5rem] text-[10px] font-black uppercase flex items-center justify-center gap-2 text-stone-400 hover:bg-stone-100 transition-all"><i data-lucide="printer" className="w-5 h-5"></i> Ticket</button>
-                                                    <button onClick={() => db.collection(`artifacts/${appId}/users/${user.uid}/tickets`).doc(t.id).delete()} className="p-4 text-stone-100 hover:text-red-400 active-bounce"><i data-lucide="trash-2" className="w-5 h-5"></i></button>
+                                                <div className="flex gap-2 font-black font-black">
+                                                    <button onClick={() => { setPrintData(t); setTimeout(()=>window.print(),300); }} className="flex-1 py-4 bg-stone-50 rounded-[1.5rem] text-[10px] font-black uppercase flex items-center justify-center gap-2 text-stone-400 hover:bg-stone-100 transition-all shadow-inner font-black font-black font-black"><i data-lucide="printer" className="w-5 h-5 shadow-sm font-black font-black font-black font-black"></i> Ticket</button>
+                                                    <button onClick={() => db.collection(`artifacts/${appId}/users/${user.uid}/tickets`).doc(t.id).delete()} className="p-4 text-stone-100 hover:text-red-400 active-bounce font-black font-black font-black"><i data-lucide="trash-2" className="w-5 h-5 shadow-sm font-black font-black"></i></button>
                                                 </div>
                                             </div>
                                         </div>
@@ -359,20 +325,20 @@
                         )}
                     </main>
 
-                    {/* MODAL COMBO (WIZARD) */}
+                    {/* MODAL COMBO */}
                     {wizardCombo && (
-                        <div className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4">
-                            <div className="bg-white rounded-[4rem] w-full max-w-2xl max-h-[95vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
-                                <div className="p-12 bg-amber-500 text-white flex justify-between items-center shadow-lg">
-                                    <div><h3 className="text-3xl font-black uppercase tracking-tighter leading-none">{wizardCombo.combo.nombre}</h3><p className="text-[10px] font-black opacity-60 mt-3 uppercase tracking-widest">Plato {wizardCombo.paso+1} de {wizardCombo.combo.ords}</p></div>
-                                    <button onClick={()=>setWizardCombo(null)} className="p-4 bg-white/10 rounded-full transition"><i data-lucide="x"></i></button>
+                        <div className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 font-black font-black">
+                            <div className="bg-white rounded-[4rem] w-full max-w-2xl max-h-[95vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 font-black font-black font-black">
+                                <div className="p-12 bg-amber-500 text-white flex justify-between items-center shadow-lg font-black">
+                                    <div><h3 className="text-3xl font-black uppercase tracking-tighter leading-none font-black font-black">{wizardCombo.combo.nombre}</h3><p className="text-[10px] font-black opacity-60 mt-3 uppercase tracking-widest font-black font-black">Plato {wizardCombo.paso+1} de {wizardCombo.combo.ords}</p></div>
+                                    <button onClick={()=>setWizardCombo(null)} className="p-4 bg-white/10 rounded-full transition font-black font-black font-black"><i data-lucide="x"></i></button>
                                 </div>
-                                <div className="p-8 flex-1 overflow-y-auto bg-stone-50/50 no-scrollbar space-y-8">
+                                <div className="p-8 flex-1 overflow-y-auto bg-stone-50/50 no-scrollbar space-y-8 font-black font-black font-black">
                                     {wizardCombo.paso < wizardCombo.combo.ords ? (
-                                        <div className="space-y-8">
-                                            <div className="bg-white p-10 rounded-[3.5rem] border-2 border-amber-200">
-                                                <p className="text-[11px] font-black uppercase text-amber-500 mb-5 tracking-widest flex items-center"><i data-lucide="user" className="w-5 h-5 mr-3 text-amber-300"></i> Nombre para este plato</p>
-                                                <input type="text" placeholder="Ej. Juan, María, Niños..." className="w-full bg-stone-50 p-6 rounded-[2rem] text-3xl font-black uppercase outline-none focus:ring-4 focus:ring-amber-100 transition-all shadow-inner" value={wizardCombo.ords[wizardCombo.paso].nombre} onChange={e => {
+                                        <div className="space-y-8 font-black font-black">
+                                            <div className="bg-white p-10 rounded-[3.5rem] border-2 border-amber-200 shadow-xl shadow-amber-500/5 font-black font-black font-black font-black">
+                                                <p className="text-[11px] font-black uppercase text-amber-500 mb-5 tracking-[0.2em] flex items-center text-left font-black font-black"><i data-lucide="user" className="w-5 h-5 mr-3 text-amber-300 shadow-sm font-black"></i> Nombre del plato</p>
+                                                <input type="text" placeholder="Ej. Juan, María, Niños..." className="w-full bg-stone-50 p-6 rounded-[2rem] text-3xl font-black uppercase outline-none focus:ring-4 focus:ring-amber-100 transition-all shadow-inner font-black font-black font-black" value={wizardCombo.ords[wizardCombo.paso].nombre} onChange={e => {
                                                     const n = [...wizardCombo.ords]; n[wizardCombo.paso].nombre = e.target.value; setWizardCombo({...wizardCombo, ords: n});
                                                 }} />
                                             </div>
@@ -383,22 +349,22 @@
                                             ))}
                                         </div>
                                     ) : (
-                                        <div className="space-y-12 py-12">
-                                            <h4 className="text-center font-black uppercase tracking-[0.5em] text-stone-200">Refrescos del Combo</h4>
+                                        <div className="space-y-12 py-12 font-black font-black font-black">
+                                            <h4 className="text-center font-black uppercase tracking-[0.5em] text-stone-200 font-black">Bebidas del Combo</h4>
                                             {wizardCombo.beverages.map((bid, i) => (
-                                                <select key={i} className="w-full p-10 bg-white border border-stone-100 rounded-[3.5rem] font-black text-2xl shadow-xl appearance-none text-center outline-none ring-4 ring-transparent focus:ring-amber-100 transition-all shadow-sm" value={bid} onChange={e => {
+                                                <select key={i} className="w-full p-10 bg-white border border-stone-100 rounded-[3.5rem] font-black text-2xl shadow-xl appearance-none text-center outline-none ring-4 ring-transparent focus:ring-amber-100 transition-all shadow-inner font-black font-black" value={bid} onChange={e => {
                                                     const n = [...wizardCombo.beverages]; n[i] = e.target.value; setWizardCombo({...wizardCombo, beverages: n});
                                                 }}>{BEBIDAS_CAT.map(r => <option key={r.id} value={r.id} disabled={sesion.inventario[r.id]<=0}>{r.nombre} ({sesion.inventario[r.id]} disp.)</option>)}</select>
                                             ))}
                                         </div>
                                     )}
                                 </div>
-                                <div className="p-12 border-t bg-white flex justify-between shadow-[0_-20px_60px_rgba(0,0,0,0.02)]">
-                                    {wizardCombo.paso > 0 ? <button onClick={()=>setWizardCombo({...wizardCombo, paso: wizardCombo.paso-1})} className="text-[13px] font-black text-stone-300 uppercase tracking-widest px-10 hover:text-stone-600 transition-colors">ATRÁS</button> : <div/>}
+                                <div className="p-12 border-t bg-white flex justify-between shadow-[0_-20px_60px_rgba(0,0,0,0.02)] font-black">
+                                    {wizardCombo.paso > 0 ? <button onClick={()=>setWizardCombo({...wizardCombo, paso: wizardCombo.paso-1})} className="text-[13px] font-black text-stone-300 uppercase tracking-widest px-10 hover:text-stone-600 transition-colors font-black font-black font-black">Regresar</button> : <div/>}
                                     {wizardCombo.paso < wizardCombo.combo.ords ? (
-                                        <button onClick={()=>setWizardCombo({...wizardCombo, paso: wizardCombo.paso+1})} className="bg-amber-500 text-white font-black px-16 py-6 rounded-[2.5rem] shadow-xl shadow-amber-200 active:scale-95 transition-all uppercase text-[12px] tracking-widest">Siguiente</button>
+                                        <button onClick={()=>setWizardCombo({...wizardCombo, paso: wizardCombo.paso+1})} className="bg-amber-500 hover:bg-[#D48F1B] text-white font-black px-16 py-6 rounded-[2.5rem] shadow-xl shadow-amber-200 active:scale-95 transition-all text-sm tracking-widest font-black uppercase font-black">Siguiente</button>
                                     ) : (
-                                        <button onClick={()=>{ setCarrito([...carrito, {tipo:'combo', ...wizardCombo, idCart: Date.now()+Math.random()}]); setWizardCombo(null); }} className="bg-pink-500 text-white font-black px-16 py-6 rounded-[2.5rem] shadow-xl shadow-pink-200 active:scale-95 transition-all uppercase text-[12px] tracking-widest font-black">Cargar Combo</button>
+                                        <button onClick={()=>{ setCarrito([...carrito, {tipo:'combo', ...wizardCombo, idCart: Date.now()+Math.random()}]); setWizardCombo(null); }} className="bg-pink-500 hover:bg-pink-600 text-white font-black px-16 py-6 rounded-[2.5rem] shadow-xl shadow-pink-200 active:scale-95 transition-all text-sm tracking-widest uppercase font-black font-black font-black">Listo</button>
                                     )}
                                 </div>
                             </div>
@@ -407,44 +373,54 @@
 
                     {/* MODAL LIBRE */}
                     {modalLibre && (
-                        <div className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4">
-                            <div className="bg-white rounded-[4rem] w-full max-w-3xl max-h-[95vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
-                                <div className="p-12 bg-pink-500 text-white flex justify-between items-center shadow-lg">
-                                    <input className="bg-transparent border-b-4 border-white/20 text-4xl font-black uppercase outline-none w-full mr-12 placeholder:text-white/20 tracking-tighter" placeholder="NOMBRE CLIENTE..." value={modalLibre.nombrePersona} onChange={e => setModalLibre({...modalLibre, nombrePersona: e.target.value})} autoFocus />
-                                    <button onClick={()=>setModalLibre(null)} className="p-3 bg-white/10 rounded-full transition"><i data-lucide="x"></i></button>
+                        <div className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 font-black">
+                            <div className="bg-white rounded-[4rem] w-full max-w-4xl max-h-[95vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-white/20 font-black">
+                                <div className="p-12 bg-pink-500 text-white flex justify-between items-center shadow-lg font-black font-black">
+                                    <input className="bg-transparent border-b-4 border-white/20 text-4xl font-black uppercase outline-none w-full mr-12 placeholder:text-white/20 tracking-tighter font-black font-black" placeholder="NOMBRE CLIENTE..." value={modalLibre.nombrePersona} onChange={e => setModalLibre({...modalLibre, nombrePersona: e.target.value})} autoFocus />
+                                    <button onClick={()=>setModalLibre(null)} className="p-3 bg-white/10 rounded-full transition font-black font-black font-black font-black"><i data-lucide="x"></i></button>
                                 </div>
-                                <div className="p-10 flex-1 overflow-y-auto bg-stone-50/50 no-scrollbar space-y-6">
+                                <div className="p-10 flex-1 overflow-y-auto bg-stone-50/50 no-scrollbar space-y-6 font-black">
                                     {modalLibre.tacos.map((t, idx) => (
-                                        <TacoConfigRow key={t.id} index={idx} taco={t} onChange={(c, v) => {
-                                            const n = [...modalLibre.tacos]; const i = n.findIndex(x => x.id === t.id); n[i][c] = v; setModalLibre({...modalLibre, tacos: n});
-                                        }} />
+                                        <div key={t.id} className="bg-white p-8 rounded-[3rem] border border-stone-100 shadow-sm mb-4 animate-in slide-in-from-right font-black font-black font-black">
+                                            <div className="flex justify-between items-center mb-4 px-2 font-black uppercase text-[10px] text-stone-300 font-black font-black font-black">Taco {idx + 1}</div>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 font-black font-black">
+                                                <select className="w-full bg-stone-50 border-none rounded-2xl p-4 text-sm font-black outline-none ring-1 ring-stone-100 focus:ring-2 focus:ring-amber-400 appearance-none shadow-inner font-black font-black" value={t.guiso} onChange={(e) => {
+                                                    const n = [...modalLibre.tacos]; n[idx].guiso = e.target.value; setModalLibre({...modalLibre, tacos: n});
+                                                }}>{GUISOS.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                                                <div className="flex bg-stone-100 p-1 rounded-xl shadow-inner font-black font-black">
+                                                    <button onClick={() => {const n = [...modalLibre.tacos]; n[idx].tortilla='Harina'; setModalLibre({...modalLibre, tacos: n}); }} className={`flex-1 py-3 text-[10px] font-black rounded-xl transition ${t.tortilla === 'Harina' ? 'bg-white shadow-xl text-stone-800' : 'text-stone-400'} font-black font-black font-black`}>Harina</button>
+                                                    <button onClick={() => {const n = [...modalLibre.tacos]; n[idx].tortilla='Maíz'; setModalLibre({...modalLibre, tacos: n}); }} className={`flex-1 py-3 text-[10px] font-black rounded-xl transition ${t.tortilla === 'Maíz' ? 'bg-white shadow-xl text-stone-800' : 'text-stone-400'} font-black font-black font-black`}>Maíz</button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     ))}
-                                    <button onClick={()=>setModalLibre({...modalLibre, tacos: [...modalLibre.tacos, {guiso: "Barbacoa", tortilla:'Maíz', frij:true, id: Date.now()+Math.random()}]})} className="w-full py-12 border-4 border-dashed rounded-[3.5rem] text-stone-300 font-black uppercase text-xs tracking-[0.4em] transition-all hover:bg-white">+ AGREGAR TACO</button>
-                                    <div className="pt-20 space-y-10 pb-10">
-                                        <h4 className="text-[12px] font-black text-stone-300 uppercase tracking-[0.5em] px-8 flex items-center"><i data-lucide="box" className="w-5 h-5 mr-3 text-pink-300" /> Bebidas Directas</h4>
-                                        <div className="grid grid-cols-2 gap-6 px-4">
+                                    <button onClick={()=>setModalLibre({...modalLibre, tacos: [...modalLibre.tacos, {guiso: "Barbacoa", tortilla:'Maíz', frij:true, id: Date.now()+Math.random()}]})} className="w-full py-12 border-4 border-dashed rounded-[3.5rem] text-stone-300 font-black uppercase text-xs tracking-[0.4em] transition-all hover:bg-white shadow-inner shadow-black/5 uppercase font-black font-black font-black font-black font-black">+ AGREGAR TACO</button>
+                                    
+                                    <div className="pt-20 space-y-10 pb-10 text-left px-4 font-black font-black">
+                                        <h4 className="text-[12px] font-black text-stone-300 uppercase tracking-[0.5em] flex items-center font-black font-black"><i data-lucide="box" className="w-5 h-5 mr-3 text-pink-300 shadow-sm font-black font-black font-black"></i> Bebidas Directas</h4>
+                                        <div className="grid grid-cols-2 gap-6 font-black font-black">
                                             {BEBIDAS_CAT.map(r => (
-                                                <button key={r.id} disabled={sesion.inventario[r.id] === 0} onClick={() => setModalLibre(prev => ({...prev, bebidasExtras: [...(prev.bebidasExtras || []), { ...r, idTemp: Date.now() + Math.random() }] }))} className={`p-8 rounded-[2.5rem] border border-stone-100 flex justify-between items-center bg-white transition-all active:scale-95 shadow-sm ${sesion.inventario[r.id] === 0 ? 'opacity-30 grayscale' : 'hover:border-amber-400 hover:shadow-xl'}`}>
-                                                    <div className="text-left"><p className="text-[11px] font-black text-[#5C3A21] uppercase leading-none">{r.nombre}</p><p className="text-[12px] font-black text-amber-500 mt-2">${r.precio}</p></div>
-                                                    <i data-lucide="plus" className="w-6 h-6 text-stone-200"></i>
+                                                <button key={r.id} disabled={sesion.inventario[r.id] === 0} onClick={() => setModalLibre(prev => ({...prev, bebidasExtras: [...(prev.bebidasExtras || []), { ...r, idTemp: Date.now() + Math.random() }] }))} className={`p-8 rounded-[2.5rem] border border-stone-100 flex justify-between items-center bg-white transition-all active:scale-95 shadow-sm ${sesion.inventario[r.id] === 0 ? 'opacity-30 grayscale' : 'hover:border-amber-400 hover:shadow-xl'} font-black font-black font-black`}>
+                                                    <div className="text-left font-black font-black font-black"><p className="text-[11px] font-black text-[#5C3A21] uppercase leading-none font-black font-black">{r.nombre}</p><p className="text-[12px] font-black text-amber-500 mt-2 font-black font-black font-black">${r.precio}</p></div>
+                                                    <i data-lucide="plus" className="w-6 h-6 text-stone-200 font-black shadow-sm font-black font-black font-black"></i>
                                                 </button>
                                             ))}
                                         </div>
                                     </div>
                                 </div>
-                                <div className="p-12 border-t bg-white flex justify-between items-center shadow-[0_-20px_40px_rgba(0,0,0,0.02)]">
-                                    <div className="flex flex-col"><span className="text-[13px] font-black text-stone-300 uppercase tracking-widest mb-1 px-1">Subtotal</span><span className="text-6xl font-black text-pink-500 tracking-tighter leading-none">${modalLibre.tacos.reduce((s,t)=>s+(PRECIOS[t.guiso]||25), 0) + (modalLibre.bebidasExtras?.reduce((s,b)=>s+b.precio,0)||0)}</span></div>
-                                    <div className="flex gap-4">
+                                <div className="p-12 border-t bg-white flex justify-between items-center shadow-[0_-20px_40px_rgba(0,0,0,0.02)] font-black">
+                                    <div className="flex flex-col font-black font-black"><span className="text-[13px] font-black text-stone-300 uppercase tracking-widest mb-1 px-1 leading-none font-black">Subtotal</span><span className="text-6xl font-black text-pink-500 tracking-tighter leading-none font-black font-black font-black font-black font-black">${modalLibre.tacos.reduce((s,t)=>s+(PRECIOS[t.guiso]||25), 0) + (modalLibre.bebidasExtras?.reduce((s,b)=>s+b.precio,0)||0)}</span></div>
+                                    <div className="flex gap-4 font-black font-black">
                                         <button onClick={()=>{
                                             const totalOrd = modalLibre.tacos.reduce((s,t)=>s+(PRECIOS[t.guiso]||25), 0) + (modalLibre.bebidasExtras?.reduce((s,b)=>s+b.precio,0)||0);
                                             setCarrito([...carrito, { tipo: 'libre', ...modalLibre, precioTotal: totalOrd, idCart: Date.now()+Math.random()}]);
                                             setModalLibre({nombrePersona: "", tacos: [{guiso: "Barbacoa", tortilla: "Maíz", frij: true, id: Date.now()}], bebidasExtras: []});
-                                        }} className="bg-white border-4 border-pink-500 text-pink-500 font-black px-12 py-6 rounded-[2.5rem] uppercase text-[11px] active:scale-95 transition-all shadow-xl shadow-pink-100">OTRA ORDEN</button>
+                                        }} className="bg-white border-4 border-pink-500 text-pink-500 font-black px-12 py-6 rounded-[2.5rem] uppercase text-[11px] active:scale-95 transition-all shadow-xl shadow-pink-100 tracking-widest leading-none font-black font-black">Otra Orden</button>
                                         <button onClick={()=>{
                                             const totalOrd = modalLibre.tacos.reduce((s,t)=>s+(PRECIOS[t.guiso]||25), 0) + (modalLibre.bebidasExtras?.reduce((s,b)=>s+b.precio,0)||0);
                                             setCarrito([...carrito, { tipo: 'libre', ...modalLibre, precioTotal: totalOrd, idCart: Date.now()+Math.random()}]);
                                             setModalLibre(null);
-                                        }} className="bg-[#5C3A21] hover:bg-black text-white font-black px-16 py-6 rounded-[2.5rem] shadow-2xl active:scale-95 transition-all text-sm tracking-widest uppercase font-black">Cargar</button>
+                                        }} className="bg-[#5C3A21] hover:bg-black text-white font-black px-16 py-6 rounded-[2.5rem] shadow-2xl active:scale-95 transition-all text-sm tracking-widest uppercase font-black font-black">Listo</button>
                                     </div>
                                 </div>
                             </div>
@@ -453,47 +429,46 @@
 
                     {/* CAJA LATERAL */}
                     {modalCarrito && (
-                        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex justify-end no-print">
-                            <div className="bg-[#FFFDF5] w-full max-w-md h-full flex flex-col shadow-2xl animate-in slide-in-from-right duration-500">
-                                <div className="p-12 bg-[#5C3A21] text-white flex justify-between items-center shadow-lg">
-                                    <h3 className="font-black uppercase tracking-widest flex items-center text-xl"><i data-lucide="shopping-bag" className="w-8 h-8 mr-6 text-pink-500"></i> Cobro</h3>
-                                    <button onClick={()=>setModalCarrito(false)} className="p-3 hover:bg-white/10 rounded-full transition"><i data-lucide="x"></i></button>
+                        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex justify-end no-print font-black">
+                            <div className="bg-[#FFFDF5] w-full max-w-md h-full flex flex-col shadow-2xl animate-in slide-in-from-right duration-500 border-l border-white/20 font-black font-black font-black">
+                                <div className="p-12 bg-[#5C3A21] text-white flex justify-between items-center shadow-lg font-black font-black">
+                                    <h3 className="font-black uppercase tracking-widest flex items-center text-xl font-black"><i data-lucide="shopping-bag" className="w-8 h-8 mr-6 text-pink-500 shadow-sm shadow-pink-500/20 font-black font-black font-black"></i> Mi Caja</h3>
+                                    <button onClick={()=>setModalCarrito(false)} className="p-3 hover:bg-white/10 rounded-full transition font-black"><i data-lucide="x"></i></button>
                                 </div>
-                                <div className="p-8 flex-1 overflow-y-auto no-scrollbar space-y-8 text-center">
-                                    {carrito.length === 0 ? <p className="text-stone-200 font-black text-sm uppercase tracking-[0.5em] mt-32 opacity-20 leading-loose">No hay órdenes<br/>pendientes</p> : 
+                                <div className="p-8 flex-1 overflow-y-auto no-scrollbar space-y-8 text-center bg-stone-50/20 font-black">
+                                    {carrito.length === 0 ? <p className="text-stone-200 font-black text-sm uppercase tracking-[0.5em] mt-32 opacity-20 leading-loose uppercase font-black font-black font-black">Caja Vacía</p> : 
                                         carrito.map(i => (
-                                            <div key={i.idCart} className="bg-white p-7 rounded-[3.5rem] border border-stone-100 flex justify-between items-center shadow-sm relative group animate-in zoom-in-95 duration-200">
-                                                <button onClick={()=>setCarrito(carrito.filter(x=>x.idCart!==i.idCart))} className="absolute -top-1 -right-1 bg-red-500 text-white p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 active:scale-90 transition-all"><i data-lucide="x" className="w-4 h-4"></i></button>
-                                                <div className="pr-4 flex-1 text-left">
-                                                    <span className="font-black text-[#5C3A21] uppercase text-sm leading-tight block tracking-tighter">{i.tipo==='combo'?`Combo ${i.combo.nombre}`:i.nombrePersona || "Libre"}</span>
+                                            <div key={i.idCart} className="bg-white p-7 rounded-[3.5rem] border border-stone-100 flex justify-between items-center shadow-sm relative group animate-in zoom-in-95 duration-200 shadow-md border-stone-200/50 font-black">
+                                                <button onClick={()=>setCarrito(carrito.filter(x=>x.idCart!==i.idCart))} className="absolute -top-1 -right-1 bg-red-500 text-white p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 active:scale-90 transition-all border-2 border-white shadow-red-500/20 font-black"><i data-lucide="x" className="w-4 h-4"></i></button>
+                                                <div className="pr-4 flex-1 text-left font-black">
+                                                    <span className="font-black text-[#5C3A21] uppercase text-sm leading-tight block tracking-tighter shadow-black/5 font-black">{i.tipo==='combo'?`Combo ${i.combo.nombre}`:i.nombrePersona || "Libre"}</span>
                                                 </div>
-                                                <span className="font-black text-3xl text-amber-600 tracking-tighter shrink-0">${i.tipo==='combo'?i.combo.precio:i.precioTotal}</span>
+                                                <span className="font-black text-3xl text-amber-600 tracking-tighter shrink-0 leading-none font-black font-black font-black">${i.tipo==='combo'?i.combo.precio:i.precioTotal}</span>
                                             </div>
                                         ))
                                     }
                                     {carrito.length > 0 && (
-                                        <div className="bg-white p-10 rounded-[4rem] border border-stone-100 space-y-12 shadow-inner shadow-black/5">
-                                            <div className="flex justify-between items-center">
-                                                <p className="text-[11px] font-black text-stone-300 uppercase tracking-widest flex items-center"><i data-lucide="tag" className="w-6 h-6 mr-4 text-pink-400 opacity-30"></i> Descuento %</p>
-                                                <button onClick={()=>setDescActivo(!descActivo)} className={`px-10 py-3 rounded-full text-[11px] font-black uppercase transition-all shadow-sm ${descActivo?'bg-pink-500 text-white shadow-pink-200':'bg-stone-50 text-stone-300'}`}>{descActivo?'Sí':'No'}</button>
+                                        <div className="bg-white p-10 rounded-[4rem] border border-stone-100 space-y-12 shadow-sm border-stone-200/50 font-black">
+                                            <div className="flex justify-between items-center font-black">
+                                                <p className="text-[11px] font-black text-stone-300 uppercase tracking-widest flex items-center font-black font-black font-black font-black font-black font-black"><i data-lucide="tag" className="w-6 h-6 mr-4 text-pink-400 opacity-30 shadow-pink-500/10 font-black font-black"></i> Descuento %</p>
+                                                <button onClick={()=>setUsarDesc(!usarDesc)} className={`px-10 py-3 rounded-full text-[11px] font-black uppercase transition-all shadow-sm ${usarDesc?'bg-pink-500 text-white shadow-pink-200':'bg-stone-50 text-stone-300 shadow-inner'} font-black`}>{usarDesc?'Sí':'No'}</button>
                                             </div>
-                                            {descActivo && <input type="number" placeholder="0" className="w-full bg-stone-50 rounded-[2.5rem] p-8 text-center font-black text-pink-600 text-6xl outline-none ring-8 ring-pink-50 shadow-inner" onChange={e=>setPctDesc(Math.min(100, Math.max(0, parseInt(e.target.value)||0)))} />}
-                                            <div className="space-y-5">
-                                                <p className="text-[11px] font-black text-stone-300 uppercase tracking-widest flex items-center text-left"><i data-lucide="message-square" className="w-6 h-6 mr-4 text-stone-100"></i> Notas</p>
-                                                <textarea className="w-full bg-stone-50 border-none rounded-[2.5rem] p-8 text-xs font-bold outline-none ring-2 ring-stone-100 focus:ring-4 focus:ring-amber-400 transition-all shadow-inner shadow-black/5" rows="3" placeholder="..." value={notasVenta} onChange={e=>setNotasVenta(e.target.value)}></textarea>
+                                            {usarDesc && <input type="number" placeholder="0" className="w-full bg-stone-50 rounded-[2.5rem] p-8 text-center font-black text-pink-600 text-6xl outline-none ring-8 ring-pink-50 shadow-inner shadow-black/5 font-black" onChange={e=>setPctDesc(Math.min(100, Math.max(0, parseInt(e.target.value)||0)))} />}
+                                            <div className="space-y-5 text-left font-black">
+                                                <p className="text-[11px] font-black text-stone-300 uppercase tracking-widest flex items-center font-black font-black font-black"><i data-lucide="message-square" className="w-6 h-6 mr-4 text-stone-100 shadow-stone-500/10 shadow-sm font-black font-black"></i> Notas</p>
+                                                <textarea className="w-full bg-stone-50 border-none rounded-[2.5rem] p-8 text-xs font-bold outline-none ring-2 ring-stone-100 focus:ring-4 focus:ring-amber-400 transition-all shadow-inner shadow-black/5 font-black" rows="3" placeholder="..." value={notas} onChange={e=>setNotas(e.target.value)}></textarea>
                                             </div>
                                         </div>
                                     )}
                                 </div>
-                                <div className="p-12 bg-white rounded-t-[5rem] shadow-[0_-50px_100px_rgba(0,0,0,0.2)] border-t border-stone-50">
-                                    <div className="flex justify-between items-end mb-16 text-[#5C3A21]">
-                                        <div className="flex flex-col"><span className="text-stone-300 uppercase text-[12px] font-black tracking-[0.2em] mb-2 px-1 leading-none">Total Final</span>{descActivo && <span className="text-stone-300 text-3xl line-through font-black px-1 opacity-50 tracking-tighter decoration-red-500 decoration-4 mb-1">${subtotal}.00</span>}</div>
-                                        <span className="text-8xl font-black tracking-tighter leading-none">${total}.00</span>
+                                <div className="p-12 bg-white rounded-t-[5rem] shadow-[0_-50px_100px_rgba(0,0,0,0.2)] border-t border-stone-50 border-stone-200/50 shadow-black/5 font-black">
+                                    <div className="flex justify-between items-end mb-16 text-[#5C3A21] font-black">
+                                        <div className="flex flex-col font-black"><span className="text-stone-300 uppercase text-[12px] font-black tracking-[0.2em] mb-2 px-1 leading-none font-black font-black font-black font-black font-black">Total Venta</span><span className="text-8xl font-black tracking-tighter leading-none shadow-black/5 font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black">${totalFinal}.00</span></div>
                                     </div>
-                                    <div className="grid grid-cols-3 gap-6">
-                                        <button disabled={isLoading||carrito.length===0} onClick={()=>setModalCambio({pagadoCon: total, cambio:0})} className="bg-green-600 hover:bg-green-700 text-white p-8 rounded-[3rem] font-black flex flex-col items-center transition shadow-2xl active:scale-90 disabled:opacity-20"><i data-lucide="banknote" className="mb-4 w-10 h-10"></i> <span className="text-[10px] uppercase tracking-widest">Efectivo</span></button>
-                                        <button disabled={isLoading||carrito.length===0} onClick={()=>procesarVenta('Tarjeta')} className="bg-blue-600 hover:bg-blue-700 text-white p-8 rounded-[3.5rem] font-black flex flex-col items-center transition shadow-2xl active:scale-90 disabled:opacity-20"><i data-lucide="credit-card" className="mb-4 w-10 h-10"></i> <span className="text-[10px] uppercase tracking-widest">Tarjeta</span></button>
-                                        <button disabled={isLoading||carrito.length===0} onClick={()=>procesarVenta('Transferencia')} className="bg-purple-600 hover:bg-purple-700 text-white p-8 rounded-[3.5rem] font-black flex flex-col items-center transition shadow-2xl active:scale-90 disabled:opacity-20"><i data-lucide="send" className="mb-4 w-10 h-10"></i> <span className="text-[10px] uppercase tracking-widest">Transf.</span></button>
+                                    <div className="grid grid-cols-3 gap-6 font-black">
+                                        <button disabled={isLoading||carrito.length===0} onClick={()=>setModalCambio({pagadoCon: totalFinal, cambio:0})} className="bg-green-600 hover:bg-green-700 text-white p-8 rounded-[3.5rem] font-black flex flex-col items-center transition shadow-2xl active:scale-90 disabled:opacity-20 shadow-green-500/10 border-b-4 border-green-800 font-black"><i data-lucide="banknote" className="mb-4 w-10 h-10 shadow-sm font-black font-black font-black"></i> <span className="text-[10px] uppercase tracking-widest font-black leading-none font-black font-black font-black">Efectivo</span></button>
+                                        <button disabled={isLoading||carrito.length===0} onClick={()=>procesarVenta('Tarjeta')} className="bg-blue-600 hover:bg-blue-700 text-white p-8 rounded-[3.5rem] font-black flex flex-col items-center transition shadow-2xl active:scale-90 disabled:opacity-20 shadow-blue-500/10 border-b-4 border-blue-800 font-black"><i data-lucide="credit-card" className="mb-4 w-10 h-10 shadow-sm font-black font-black font-black"></i> <span className="text-[10px] uppercase tracking-widest font-black leading-none font-black font-black font-black">Tarjeta</span></button>
+                                        <button disabled={isLoading||carrito.length===0} onClick={()=>procesarVenta('Transferencia')} className="bg-purple-600 hover:bg-purple-700 text-white p-8 rounded-[3.5rem] font-black flex flex-col items-center transition shadow-2xl active:scale-90 disabled:opacity-20 shadow-purple-500/10 border-b-4 border-purple-800 font-black font-black font-black"><i data-lucide="send" className="mb-4 w-10 h-10 shadow-sm font-black font-black font-black"></i> <span className="text-[10px] uppercase tracking-widest font-black leading-none text-center font-black font-black font-black">Transf.</span></button>
                                     </div>
                                 </div>
                             </div>
@@ -502,25 +477,25 @@
 
                     {/* MODAL CAMBIO (CALCULADORA) */}
                     {modalCambio && (
-                        <div className="fixed inset-0 z-[80] bg-[#5C3A21]/95 flex items-center justify-center p-6 backdrop-blur-3xl no-print">
-                            <div className="bg-white rounded-[5.5rem] w-full max-w-md p-16 shadow-2xl animate-in zoom-in-95 duration-300 border border-stone-100 text-center">
-                                <h3 className="text-3xl font-black uppercase text-[#5C3A21] mb-16 tracking-tighter">Cobro Efectivo</h3>
-                                <div className="bg-stone-50 p-12 rounded-[4rem] mb-12 space-y-12 shadow-inner border border-stone-200/50 text-center">
-                                    <span className="text-[12px] font-black text-stone-300 uppercase tracking-widest block mb-2 text-center">A Cobrar: ${total}.00</span>
+                        <div className="fixed inset-0 z-[80] bg-[#5C3A21]/95 flex items-center justify-center p-6 backdrop-blur-3xl no-print font-black">
+                            <div className="bg-white rounded-[5.5rem] w-full max-w-md p-16 shadow-2xl animate-in zoom-in-95 duration-300 border border-stone-100 text-center shadow-black/30 font-black font-black">
+                                <h3 className="text-3xl font-black uppercase text-[#5C3A21] mb-16 tracking-tighter leading-none uppercase font-black shadow-black/5 font-black font-black">Cobro Efectivo</h3>
+                                <div className="bg-stone-50 p-12 rounded-[4rem] mb-12 space-y-12 shadow-inner border border-stone-200/50 text-center font-black">
+                                    <span className="text-[12px] font-black text-stone-300 uppercase tracking-widest block mb-2 text-center font-black">A Cobrar: ${totalFinal}.00</span>
                                     <div className="space-y-6">
-                                        <label className="text-[12px] font-black text-green-500 uppercase tracking-[0.4em]">Recibido ($)</label>
-                                        <input type="number" className="w-full bg-white border-none rounded-[2.5rem] p-12 text-8xl font-black text-green-600 text-center shadow-2xl outline-none ring-8 ring-green-50 focus:ring-green-100 transition-all tracking-tighter leading-none" value={modalCambio.pagadoCon} onChange={e=>{ 
-                                            const v = parseFloat(e.target.value)||0; setModalCambio({...modalCambio, pagadoCon:v, cambio: Math.max(0, v - total)}) 
+                                        <label className="text-[12px] font-black text-green-500 uppercase tracking-widest font-black font-black">Recibido ($)</label>
+                                        <input type="number" className="w-full bg-white border-none rounded-[2.5rem] p-12 text-8xl font-black text-green-600 text-center shadow-2xl outline-none ring-8 ring-green-50 focus:ring-green-100 transition-all tracking-tighter leading-none shadow-green-500/5 font-black font-black font-black" value={modalCambio.pagadoCon} onChange={e=>{ 
+                                            const v = parseFloat(e.target.value)||0; setModalCambio({...modalCambio, pagadoCon:v, cambio: Math.max(0, v - totalFinal)}) 
                                         }} autoFocus />
                                     </div>
-                                    <div className="flex justify-between items-center pt-10 border-t-2 border-stone-200/50 px-4">
-                                        <span className="text-[12px] font-black text-stone-300 uppercase tracking-widest">Cambio</span>
-                                        <span className={`text-6xl font-black ${modalCambio.cambio>0?'text-amber-500 animate-pulse':'text-stone-300'} tracking-tighter`}>${modalCambio.cambio}.00</span>
+                                    <div className="flex justify-between items-center pt-10 border-t-2 border-stone-200/50 px-4 font-black">
+                                        <span className="text-[12px] font-black text-stone-300 uppercase tracking-widest font-black font-black">Cambio</span>
+                                        <span className={`text-6xl font-black ${modalCambio.cambio>0?'text-amber-500 animate-pulse':'text-stone-300'} tracking-tighter leading-none font-black font-black font-black`}>${modalCambio.cambio}.00</span>
                                     </div>
                                 </div>
-                                <div className="flex gap-6">
-                                    <button onClick={()=>setModalCambio(null)} className="flex-1 py-8 rounded-[3rem] font-black text-stone-300 uppercase text-[12px] tracking-widest hover:text-stone-500 transition-all active-bounce">Regresar</button>
-                                    <button onClick={()=>procesarVenta('Efectivo', modalCambio.pagadoCon)} disabled={modalCambio.pagadoCon < total||isLoading} className="flex-[2] bg-green-600 hover:bg-green-700 text-white font-black py-8 rounded-[3rem] shadow-2xl active:scale-95 transition-all uppercase text-[12px] tracking-[0.2em] leading-none">Pagar</button>
+                                <div className="flex gap-6 font-black">
+                                    <button onClick={()=>setModalCambio(null)} className="flex-1 py-8 rounded-[3rem] font-black text-stone-300 uppercase text-[12px] tracking-widest hover:text-stone-500 transition-all active-bounce leading-none font-black font-black">Regresar</button>
+                                    <button onClick={()=>procesarVenta('Efectivo', modalCambio.pagadoCon)} disabled={modalCambio.pagadoCon < totalFinal||isLoading} className="flex-[2] bg-green-600 hover:bg-green-700 text-white font-black py-8 rounded-[3rem] shadow-2xl active:scale-95 transition-all uppercase text-[12px] tracking-widest leading-none font-black font-black border-b-4 border-green-800">Pagar</button>
                                 </div>
                             </div>
                         </div>
@@ -528,35 +503,35 @@
 
                     {/* MODAL SURTIR */}
                     {modalSurtir && (
-                        <div className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4">
-                            <div className="bg-white rounded-[4rem] w-full max-w-2xl p-16 shadow-2xl animate-in zoom-in-95">
-                                <div className="flex justify-between items-center mb-16 px-6 text-left">
-                                    <h3 className="text-4xl font-black uppercase text-[#5C3A21] tracking-tighter leading-none">Surtir Bebidas</h3>
-                                    <button onClick={()=>setModalSurtir(false)} className="p-4 bg-stone-100 rounded-full active-bounce transition-all"><i data-lucide="x"></i></button>
+                        <div className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 font-black font-black">
+                            <div className="bg-white rounded-[4rem] w-full max-w-2xl p-16 shadow-2xl animate-in zoom-in-95 border border-white/10 shadow-black/30 font-black font-black">
+                                <div className="flex justify-between items-center mb-16 px-6 text-left font-black">
+                                    <h3 className="text-4xl font-black uppercase text-[#5C3A21] tracking-tighter leading-none uppercase font-black font-black font-black">Surtir Bebidas</h3>
+                                    <button onClick={()=>setModalSurtir(false)} className="p-4 bg-stone-100 rounded-full active-bounce transition-all hover:bg-stone-200 font-black font-black"><i data-lucide="x"></i></button>
                                 </div>
-                                <div className="grid grid-cols-2 gap-8 mb-16 max-h-[50vh] overflow-y-auto no-scrollbar pr-4 px-4 text-left">
+                                <div className="grid grid-cols-2 gap-8 mb-16 max-h-[50vh] overflow-y-auto no-scrollbar pr-4 px-4 text-left font-black font-black">
                                     {BEBIDAS_CAT.map(r => (
-                                        <div key={r.id} className="bg-stone-50 p-8 rounded-[3rem] flex items-center justify-between border border-stone-100 shadow-sm hover:shadow-xl transition-all">
-                                            <div className="flex-1 overflow-hidden pr-6"><p className="text-[10px] font-black text-stone-400 uppercase truncate leading-none mb-2 tracking-widest">{r.nombre}</p><p className="text-3xl font-black text-[#5C3A21]">Stock: {sesion?.inventario[r.id]||0}</p></div>
-                                            <button onClick={()=>surtirItem(r.id, 1)} className="bg-pink-500 text-white w-14 h-14 rounded-[1.5rem] flex items-center justify-center shadow-lg btn-active hover:bg-pink-600 active:scale-90 transition-all shadow-pink-100"><i data-lucide="plus" className="w-8 h-8"></i></button>
+                                        <div key={r.id} className="bg-stone-50 p-8 rounded-[3rem] flex items-center justify-between border border-stone-100 shadow-sm hover:shadow-xl transition-all border-stone-200/50 font-black">
+                                            <div className="flex-1 overflow-hidden pr-6 font-black font-black font-black font-black"><p className="text-[10px] font-black text-stone-400 uppercase truncate leading-none mb-2 tracking-widest font-black font-black font-black"> {r.nombre}</p><p className="text-3xl font-black text-[#5C3A21] leading-none font-black font-black">Stock: {sesion?.inventario?.[r.id]||0}</p></div>
+                                            <button onClick={()=>surtirItem(r.id, 1)} className="bg-pink-500 text-white w-14 h-14 rounded-[1.5rem] flex items-center justify-center shadow-lg btn-active hover:bg-pink-600 active:scale-90 transition-all shadow-pink-500/20 border-b-4 border-pink-800 font-black font-black font-black"><i data-lucide="plus" className="w-8 h-8 font-black font-black font-black"></i></button>
                                         </div>
                                     ))}
                                 </div>
-                                <button onClick={()=>setModalSurtir(false)} className="w-full bg-[#5C3A21] hover:bg-black text-white py-8 rounded-[2.5rem] font-black uppercase text-xs active:scale-95 transition-all tracking-[0.4em] shadow-2xl shadow-black/10 uppercase font-black">Finalizar Ajuste</button>
+                                <button onClick={()=>setModalSurtir(false)} className="w-full bg-[#5C3A21] hover:bg-black text-white py-8 rounded-[2.5rem] font-black uppercase text-xs active:scale-95 transition-all tracking-[0.4em] shadow-2xl shadow-black/10 uppercase font-black leading-none font-black font-black font-black font-black font-black font-black font-black font-black">Listo</button>
                             </div>
                         </div>
                     )}
 
                     {/* MODAL ÉXITO */}
                     {modalExito && (
-                        <div className="fixed inset-0 z-[90] bg-[#5C3A21] flex items-center justify-center p-12 text-center no-print">
-                            <div className="max-w-md w-full animate-in zoom-in-90 duration-700">
-                                <div className="w-48 h-48 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-16 shadow-[0_40px_100px_rgba(34,197,94,0.4)] border-[16px] border-green-400 animate-bounce-short"><i data-lucide="check" className="w-24 h-24 text-white"></i></div>
-                                <h2 className="text-7xl font-black text-white uppercase tracking-tighter mb-8 leading-none tracking-tighter font-black">¡Vendido!</h2>
-                                <p className="text-yellow-400 font-bold uppercase text-[12px] tracking-[0.5em] mb-24 opacity-80 tracking-widest uppercase font-black">Registro guardado correctamente</p>
-                                <div className="space-y-6">
-                                    <button onClick={()=>{setTimeout(()=>window.print(), 300);}} className="w-full bg-white text-[#5C3A21] font-black py-9 rounded-[3.5rem] shadow-2xl flex items-center justify-center space-x-6 uppercase text-sm tracking-[0.2em] btn-active hover:bg-yellow-400 border-b-8 border-stone-200 shadow-xl"><i data-lucide="printer" className="w-8 h-8"></i><span>Imprimir Ticket</span></button>
-                                    <button onClick={()=>setModalExito(false)} className="w-full bg-white/5 hover:bg-white/10 text-white font-black py-7 rounded-[3rem] uppercase text-[12px] tracking-[0.4em] active:scale-95 transition-all border-2 border-white/10">Siguiente Venta</button>
+                        <div className="fixed inset-0 z-[90] bg-[#5C3A21] flex items-center justify-center p-12 text-center no-print backdrop-blur-md font-black font-black">
+                            <div className="max-w-md w-full animate-in zoom-in-90 duration-700 font-black font-black">
+                                <div className="w-48 h-48 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-16 shadow-[0_40px_100px_rgba(34,197,94,0.4)] border-[16px] border-green-400 animate-bounce-short shadow-green-500/20 font-black font-black"><i data-lucide="check" className="w-24 h-24 text-white font-black font-black font-black"></i></div>
+                                <h2 className="text-7xl font-black text-white uppercase tracking-tighter mb-8 leading-none tracking-tighter font-black shadow-black/10 font-black font-black font-black font-black font-black">¡Vendido!</h2>
+                                <p className="text-yellow-400 font-bold uppercase text-[12px] tracking-[0.5em] mb-24 opacity-80 tracking-widest uppercase font-black font-black font-black font-black font-black font-black">Registro guardado correctamente</p>
+                                <div className="space-y-6 font-black font-black font-black">
+                                    <button onClick={()=>{setTimeout(()=>window.print(), 300);}} className="w-full bg-white text-[#5C3A21] font-black py-9 rounded-[3.5rem] shadow-2xl flex items-center justify-center space-x-6 uppercase text-sm tracking-[0.2em] btn-active hover:bg-yellow-400 border-b-8 border-stone-200 shadow-white/10 active:scale-95 transition-all leading-none font-black uppercase font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black"><i data-lucide="printer" className="w-8 h-8 font-black font-black"></i><span>Imprimir Ticket</span></button>
+                                    <button onClick={()=>setModalExito(false)} className="w-full bg-white/5 hover:bg-white/10 text-white font-black py-7 rounded-[3rem] uppercase text-[12px] tracking-[0.4em] active:scale-95 transition-all border-2 border-white/10 leading-none font-black uppercase opacity-60 font-black font-black font-black font-black font-black font-black font-black">Siguiente Venta</button>
                                 </div>
                             </div>
                         </div>
